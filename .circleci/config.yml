@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-  docker: circleci/docker@1.0.2
+
   
 jobs:
   build-and-test:
@@ -15,14 +15,16 @@ jobs:
             - run: npm test
             
   build:
-    executor: docker/docker
-    steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - docker/build:
-          image: kklim/node-server
-
+        environment:
+          IMAGE_NAME: kklim/node-server
+        docker:
+          - image: circleci/buildpack-deps:stretch
+        steps:
+          - checkout
+          - setup_remote_docker
+          - run:
+              name: Build Docker image
+              command: docker build -t $IMAGE_NAME:latest .
 
 workflows:
     build-and-test:
