@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
- test:
+ tests:
     executor:
       name: node/default
     steps:
@@ -11,7 +11,7 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
- build-and-publish:
+ build-and-publish-server:
    machine: true
    steps:
      - checkout
@@ -24,13 +24,13 @@ jobs:
 workflows:
       build-master:
         jobs:
-          - build-and-publish:
+          - build-and-publish-server:
               requires:
-                 - test
+                 - tests
               filters:
                 branches:
                   only: master
-          - test:
+          - tests:
               filters:
                 branches:
                   only: master
