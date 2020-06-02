@@ -1,9 +1,6 @@
 version: 2.1
-
 orbs:
   node: circleci/node@1.1.6
-
-
 jobs:
   test:
     executor:
@@ -14,7 +11,6 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
-
  build-and-publish:
    machine: true
    steps:
@@ -25,7 +21,6 @@ jobs:
      - run: docker build -t kklim/node-server .
 
      - run: docker push kklim/node-server
-
 workflows:
       build-master:
         jobs:
@@ -39,5 +34,3 @@ workflows:
               filters:
                 branches:
                   only: master
-         
-
