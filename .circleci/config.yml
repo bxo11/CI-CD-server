@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-  docker-publish: circleci/docker-publish@0.1.7
+  docker: circleci/docker@1.0.2
   
 jobs:
   build-and-test:
@@ -13,12 +13,18 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+            
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: kklim/node-server
+      - docker/push:
+          image: kklim/node-server
 workflows:
     build-and-test:
       jobs:
         - build-and-test
-    build_and_publish_docker_image:
-      jobs:
-        - docker-publish/publish:
-           image: kklim/node-server
-           tag: my_tag
+
