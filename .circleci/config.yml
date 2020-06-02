@@ -1,23 +1,16 @@
-version: 2.1
+version: 2
 jobs:
-  build:
-    executor: docker/docker
-    environment:
-      docker-username: kklim
-      docker-password: 1loveprogramming
-    steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - docker/build:
-          image: kklim/node-server
+ build:
+   machine: true
+   steps:
+     - checkout
+     # start proprietary DB using private Docker image
+     # with credentials stored in the UI
+     - run: |
+         echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
+     # build the application image
+     - run: docker build -t kklim/node-server .
 
-orbs:
-  docker: circleci/docker@1.0.2
-  
-workflows:
-  build:
-    jobs:
-      - docker/publish:
-          image: kklim/node-server
+     # deploy the image
+     - run: docker push kklim/node-server
