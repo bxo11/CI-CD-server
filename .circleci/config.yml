@@ -1,50 +1,22 @@
-    version: 2.1
-    executors:
-      docker-publisher:
-        environment:
-          IMAGE_NAME: kklim/node-server
-          DOCKERHUB_PASS: 1loveprogramming
-          DOCKERHUB_USERNAME: kklim
-        docker:
-          - image: circleci/buildpack-deps:stretch
-
-      build:
-        executor: docker-publisher
-        steps:
-          - checkout
-          - setup_remote_docker
-          - run:
-              command: |
-                docker build -t $IMAGE_NAME:latest .
-          - run:
-              command: docker save -o image.tar $IMAGE_NAME
-          - persist_to_workspace:
-              root: .
-              paths:
-                - ./image.tar
-      publish:
-        executor: docker-publisher
-        steps:
-          - attach_workspace:
-              at: /tmp/workspace
-          - setup_remote_docker
-          - run:
-              command: docker load -i /tmp/workspace/image.tar
-          - run:
-              command: |
-                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-                docker push $IMAGE_NAME:latest
-    workflows:
-      build-master:
-        jobs:
-          - build:
-              filters:
-                branches:
-                  only: master
-          - publish:
-              requires:
-                - build
-              filters:
-                branches:
-                  only: master
-
+jobs:
+  build-and-push:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      - docker/build:
+          image: kklim/node-server
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: kklim/node-server
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
+orbs:
+  docker: circleci/docker@1.0.2
+version: 2.1
+workflows:
+  commit:
+    jobs:
+      - build-and-push
