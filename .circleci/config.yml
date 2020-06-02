@@ -22,8 +22,7 @@ jobs:
       - docker/check
       - docker/build:
           image: kklim/node-server
-      - docker/push:
-          image: kklim/node-server
+
 
 workflows:
     build-and-test:
