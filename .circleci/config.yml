@@ -14,16 +14,16 @@ jobs:
             - run: npm install
             - run: npm test
             
-  build:       
+  build:
     executor: docker/docker
     steps:
       - setup_remote_docker
       - checkout
       - docker/check
-        - docker/build:
-            image: kklim/node-server
-        - docker/push:
-            image: kklim/node-server
+      - docker/build:
+          image: kklim/node-server
+      - docker/push:
+          image: kklim/node-server
 
 workflows:
     build-and-test:
