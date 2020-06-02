@@ -4,7 +4,7 @@ orbs:
 
   
 jobs:
-  build-and-test:
+  test:
     executor:
       name: node/default
     steps:
@@ -42,11 +42,19 @@ jobs:
                 docker push $IMAGE_NAME:latest
 
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
-        - build
-        - publish
+      build-master:
+        jobs:
+          - build:
+              filters:
+                branches:
+                  only: master
+          - publish:
+              requires:
+                - build
+              filters:
+                branches:
+                  only: master
+           - test
 
 
 
