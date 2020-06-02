@@ -9,9 +9,9 @@ jobs:
             name: node/default
         steps:
             - checkout
-                steps:
-                    - run: npm install
-                    - run: npm test
+            steps:
+             - run: npm install
+             - run: npm test
             
     build:       
         executor: docker/docker
