@@ -4,7 +4,7 @@ orbs:
   docker: circleci/docker@1.0.2
   
 jobs:
-  build-and-test:
+  test:
     executor:
       name: node/default
     steps:
@@ -13,7 +13,7 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
-            
+   build:       
     executor: docker/docker
     steps:
       - setup_remote_docker
@@ -24,7 +24,7 @@ jobs:
       - docker/push:
           image: kklim/node-server
 workflows:
-    build-and-test:
+    test:
       jobs:
-        - build-and-test
-
+        - test
+        - build
