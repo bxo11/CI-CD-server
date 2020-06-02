@@ -1,14 +1,12 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-  docker: circleci/docker@0.5.13
+  docker-publish: circleci/docker-publish@1.0.0
   
 jobs:
   build-and-test:
     executor:
       name: node/default
-    docker:
-      - image: kklim/node-server:first
     steps:
       - checkout
       - node/with-cache:
@@ -19,3 +17,8 @@ workflows:
     build-and-test:
       jobs:
         - build-and-test
+    build_and_publish_docker_image:
+      jobs:
+        - docker-publish/publish:
+           image: kklim/node-server
+           tag: my_tag
