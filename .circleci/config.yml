@@ -7,10 +7,7 @@ jobs:
       - docker/check
       - docker/build:
           image: kklim/node-server
-      - docker/publish:
-          docker-password: 1loveprogramming
-          docker-username: kklim
-          image: kklim/node-server
+
 
 orbs:
   docker: circleci/docker@1.0.2
@@ -18,3 +15,7 @@ version: 2.1
 workflows:
     jobs:
       - build-and-push
+      - docker/publish:
+          docker-password: 1loveprogramming
+          docker-username: kklim
+          image: kklim/node-server
