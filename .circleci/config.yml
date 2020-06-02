@@ -2,6 +2,9 @@ version: 2.1
 jobs:
   build:
     executor: docker/docker
+    environment:
+      docker-username: kklim
+      docker-password: 1loveprogramming
     steps:
       - setup_remote_docker
       - checkout
@@ -18,5 +21,3 @@ workflows:
     jobs:
       - docker/publish:
           image: kklim/node-server
-          docker-password: 1loveprogramming
-          docker-username: kklim
