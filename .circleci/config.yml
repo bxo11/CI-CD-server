@@ -1,47 +1,40 @@
-version: 2.1
-orbs:
-  node: circleci/node@1.1.6
-
-  
-jobs:
-  test:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
-            
-  build:
-        environment:
-          IMAGE_NAME: kklim/node-server
-        docker:
-          - image: circleci/buildpack-deps:stretch
-        steps:
-          - checkout
-          - setup_remote_docker
-          - run:
-              name: Build Docker image
-              command: docker build -t $IMAGE_NAME:latest .
-              
-  publish:
+    version: 2.1
+    executors:
+      docker-publisher:
         environment:
           IMAGE_NAME: kklim/node-server
           DOCKERHUB_PASS: 1loveprogramming
           DOCKERHUB_USERNAME: kklim
         docker:
           - image: circleci/buildpack-deps:stretch
+    jobs:
+      build:
+        executor: docker-publisher
         steps:
+          - checkout
           - setup_remote_docker
           - run:
-              name: Publish Docker Image to Docker Hub
+              command: |
+                docker build -t $IMAGE_NAME:latest .
+          - run:
+              command: docker save -o image.tar $IMAGE_NAME
+          - persist_to_workspace:
+              root: .
+              paths:
+                - ./image.tar
+      publish:
+        executor: docker-publisher
+        steps:
+          - attach_workspace:
+              at: /tmp/workspace
+          - setup_remote_docker
+          - run:
+              command: docker load -i /tmp/workspace/image.tar
+          - run:
               command: |
                 echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
                 docker push $IMAGE_NAME:latest
-
-workflows:
+    workflows:
       build-master:
         jobs:
           - build:
@@ -55,6 +48,3 @@ workflows:
                 branches:
                   only: master
           - test
-
-
-
